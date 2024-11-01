@@ -4,6 +4,97 @@ import { protect } from "../Middlewares/protect.mjs";
 
 const bookRouter = Router();
 
+/**
+ * @swagger
+ * /book:
+ *   get:
+ *     summary: Get all books
+ *     tags: [Books]
+ *     responses:
+ *       200:
+ *         description: List of books
+ *       500:
+ *         description: Server could not read book because database issue
+ */
+
+/**
+ * @swagger
+ * /book:
+ *   post:
+ *     summary: Add a new book
+ *     tags: [Books]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Book created successfully
+ *       500:
+ *         description: Server could not create book because database connection
+ */
+
+/**
+ * @swagger
+ * /book/{id}:
+ *   put:
+ *     summary: Update a book's information
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:          
+ *         description: Book ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Book updated successfully
+ *       404:
+ *         description: Book not found
+ *       500:
+ *         description: Server could not update book because of database connection issue
+ */
+
+/**
+ * @swagger
+ * /book/{id}:
+ *   delete:
+ *     summary: Delete a book
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Book ID
+ *     responses:
+ *       200:
+ *         description: Book deleted successfully
+ *       404:
+ *         description: Book not found
+ *       500:
+ *         description: Server could not delete book because of database connection issue
+ */
+
 bookRouter.post("/",protect, async (req, res) => {
   const newBook = {
     ...req.body,
@@ -54,7 +145,7 @@ bookRouter.put("/:id",protect, async (req, res) => {
         WHERE book_id = $4`,
       [updateBook.title, updateBook.category, updateBook.updated_at, bookId]
     );
-    if (!result.rows[0]) {
+    if (result.rowCount === 0) {
       return res.status(404).json({
         message: "Book not found",
       });
@@ -77,7 +168,7 @@ bookRouter.delete("/:id",protect, async (req, res) => {
       `DELETE FROM books WHERE book_id = $1`,
       [bookId]
     );
-    if (!result.rows[0]) {
+    if (result.rowCount === 0) {
       return res.status(404).json({
         message: `Book not found`,
       });

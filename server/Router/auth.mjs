@@ -5,6 +5,31 @@ import connectionPool from "../utils/db.mjs";
 
 const authRouter = Router();
 
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       500:
+ *         description: Server error
+ */
 authRouter.post("/register", async (req, res) => {
   const user = {
     username: req.body.username,
@@ -24,10 +49,37 @@ authRouter.post("/register", async (req, res) => {
 
     res.status(201).json({ message: "User registered successfully" });
   } catch {
-    res.status(500).json({ message: "Failed to register user" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login a user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: password not valid
+ *       404:
+ *         description: user not found
+ *       500:
+ *         description: Server error
+ */
 authRouter.post("/login", async (req, res) => {
   try {
     
@@ -53,10 +105,20 @@ authRouter.post("/login", async (req, res) => {
 
     res.status(200).json({ message: "Login successful", token });
   } catch {
-    res.status(500).json({ message: "Failed to login" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ */
 authRouter.post("/logout", (req, res) => {
   res.status(200).json({ message: "Logout successful" });
 });
